@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// PERMISSÕES DO SISTEMA
+enum Role {
+  ADMIN
+  USER
+}
+
+//
+// USERS
+//
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  media     Media[]  // imagens enviadas
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//
+// TEXTOS E CONTEÚDOS DO SITE (EDITÁVEIS PELO ADMIN)
+//
+model ContentBlock {
+  id        Int      @id @default(autoincrement())
+  page      String   // ex: "home", "sobre", "footer"
+  key       String   // ex: "titulo_principal", "descricao_banner"
+  value     String?  @db.LongText
+  type      String   // "text", "html", "json", "image"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//
+// FORMULÁRIOS
+//
+model Formulario {
+  id             Int           @id @default(autoincrement())
+
+  name           String
+  email          String
+  telefone       String?
+  dataNascimento DateTime?
+
+  cidade         String?
+  estado         String?
+
+  nomeCredencial String
+  tipoCredencial String?
+  mensagem       String?       @db.LongText
+
+  imagens        Media[]       @relation("FormularioImages")
+
+  eventoId       Int?
+  evento         Evento?       @relation(fields: [eventoId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+//
+// EVENTOS
+//
+model Evento {
+  id           Int            @id @default(autoincrement())
+  titulo       String
+  descricao    String?        @db.LongText
+  dataInicio   DateTime?
+  dataFim      DateTime?
+  local        String?
+
+  formularios  Formulario[]
+}
+
+//
+// IMAGENS / ARQUIVOS
+//
+model Media {
+  id              Int           @id @default(autoincrement())
+  filename        String
+  url             String
+  mimeType        String?
+  size            Int?
+
+  uploadedAt      DateTime      @default(now())
+
+  uploadedBy      Int?
+  user            User?         @relation(fields: [uploadedBy], references: [id])
+
+  formularioId    Int?
+  formulario      Formulario?   @relation("FormularioImages", fields: [formularioId], references: [id])
+}
