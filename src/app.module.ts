@@ -3,7 +3,8 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { FormularioModule } from './formulario/formulario.module';
-import { EventoModule } from './evento/evento.module';
+import { EventosModule } from './evento/evento.module';
+
 import { MediaModule } from './media/media.module';
 import { PrismaModule } from './database/database.module';
 
@@ -15,7 +16,7 @@ import { PrismaModule } from './database/database.module';
     AuthModule,
     UserModule,
     FormularioModule,
-    EventoModule,
+    EventosModule,
     MediaModule,
     PrismaModule,
   ],

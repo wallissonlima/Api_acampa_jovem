@@ -70,8 +70,6 @@ model Formulario {
 
   imagens        Media[]       @relation("FormularioImages")
 
-  eventoId       Int?
-  evento         Evento?       @relation(fields: [eventoId], references: [id])
 
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -80,32 +78,39 @@ model Formulario {
 //
 // EVENTOS
 //
-model Evento {
-  id           Int            @id @default(autoincrement())
-  titulo       String
-  descricao    String?        @db.LongText
-  dataInicio   DateTime?
-  dataFim      DateTime?
-  local        String?
-
-  formularios  Formulario[]
+model evento {
+  id         Int      @id @default(autoincrement())
+  titulo     String
+  descricao  String?
+  dataInicio DateTime?
+  dataFim    DateTime?
+  imagem     String?   @db.LongText   // <--- Alterado
+  createdAt  DateTime  @default(now())
 }
+
+
+
 
 //
 // IMAGENS / ARQUIVOS
 //
 model Media {
-  id              Int           @id @default(autoincrement())
-  filename        String
-  url             String
-  mimeType        String?
-  size            Int?
+  id           Int          @id @default(autoincrement())
+  filename     String
+  url          String
+  mimeType     String?
+  size         Int?
 
-  uploadedAt      DateTime      @default(now())
+  uploadedAt   DateTime     @default(now())
 
-  uploadedBy      Int?
-  user            User?         @relation(fields: [uploadedBy], references: [id])
+  // Usuário que fez o upload
+  uploadedBy   Int?
+  user         User?        @relation(fields: [uploadedBy], references: [id])
 
-  formularioId    Int?
-  formulario      Formulario?   @relation("FormularioImages", fields: [formularioId], references: [id])
+  // Relacionamento com Formulário
+  formularioId Int?
+  formulario   Formulario?  @relation("FormularioImages", fields: [formularioId], references: [id])
+
+ 
 }
+
