@@ -19,6 +19,8 @@ CREATE TABLE `ContentBlock` (
     `key` VARCHAR(191) NOT NULL,
     `value` LONGTEXT NULL,
     `type` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NULL,
+    `description` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -37,7 +39,6 @@ CREATE TABLE `Formulario` (
     `nomeCredencial` VARCHAR(191) NOT NULL,
     `tipoCredencial` VARCHAR(191) NULL,
     `mensagem` LONGTEXT NULL,
-    `eventoId` INTEGER NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -51,7 +52,8 @@ CREATE TABLE `Evento` (
     `descricao` LONGTEXT NULL,
     `dataInicio` DATETIME(3) NULL,
     `dataFim` DATETIME(3) NULL,
-    `local` VARCHAR(191) NULL,
+    `imagem` LONGTEXT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -69,9 +71,6 @@ CREATE TABLE `Media` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- AddForeignKey
-ALTER TABLE `Formulario` ADD CONSTRAINT `Formulario_eventoId_fkey` FOREIGN KEY (`eventoId`) REFERENCES `Evento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Media` ADD CONSTRAINT `Media_uploadedBy_fkey` FOREIGN KEY (`uploadedBy`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

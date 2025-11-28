@@ -53,6 +53,7 @@ export class AuthService {
             sub: user.id,
             email: user.email,
             name: user.name,
+            role: user.role, // <- ISSO É O QUE LIBERA O DELETE
         };
 
         const token = this.jwtService.sign(payload);
@@ -62,6 +63,7 @@ export class AuthService {
             user,
         };
     }
+
 
     async getAllUsers() {
         return this.prisma.user.findMany({

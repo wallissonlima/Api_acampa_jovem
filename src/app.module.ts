@@ -7,6 +7,7 @@ import { EventosModule } from './evento/evento.module';
 
 import { MediaModule } from './media/media.module';
 import { PrismaModule } from './database/database.module';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PrismaModule } from './database/database.module';
     EventosModule,
     MediaModule,
     PrismaModule,
+    ContentModule,
   ],
 })
 export class AppModule { }

@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
-import { UploadEventoDto  } from './dto/update-content.dto';
+import { UploadEventoDto } from './dto/update-content.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -45,7 +45,7 @@ export class ContentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UploadEventoDto ) {
+  async update(@Param('id') id: string, @Body() dto: UploadEventoDto) {
     return this.content.update(Number(id), dto);
   }
 
@@ -55,4 +55,17 @@ export class ContentController {
   async delete(@Param('id') id: string) {
     return this.content.delete(Number(id));
   }
+
+  // GET para buscar tudo que foi salvo com saveMany
+  @Get('admin')
+  async getContent() {
+    return this.content.listAll(); // ou outro método que você usar para buscar tudo
+  }
+
+  // POST para salvar vários registros
+  @Post('admin')
+  async saveContent(@Body() body: any[]) {
+    return this.content.saveMany(body);
+  }
+
 }

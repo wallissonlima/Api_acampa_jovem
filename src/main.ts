@@ -11,10 +11,12 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.use(json({ limit: '25mb' }));  // permite JSON grande
-  app.use(urlencoded({ limit: '50mb', extended: true })); // body grande com arquivo base64
+  app.use(json({ limit: '25mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
 
+  app.setGlobalPrefix('api'); // 🔥 agora todos endpoints ficam /api/...
 
   await app.listen(3000);
+  console.log('🚀 API rodando em http://localhost:3000');
 }
 bootstrap();
