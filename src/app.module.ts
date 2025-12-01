@@ -8,6 +8,8 @@ import { EventosModule } from './evento/evento.module';
 import { MediaModule } from './media/media.module';
 import { PrismaModule } from './database/database.module';
 import { ContentModule } from './content/content.module';
+import { TimelineModule } from './timeline/timeline.module';
+import { DepoimentosModule } from './depoimentos/depoimentos.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { ContentModule } from './content/content.module';
     MediaModule,
     PrismaModule,
     ContentModule,
+    TimelineModule,
+    DepoimentosModule,
   ],
 })
 export class AppModule { }

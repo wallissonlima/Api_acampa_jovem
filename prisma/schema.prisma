@@ -99,3 +99,26 @@ model Media {
   formularioId Int?
   formulario   Formulario?  @relation("FormularioImages", fields: [formularioId], references: [id])
 }
+
+model Timeline {
+  id         Int          @id @default(autoincrement())
+  eventDate  DateTime
+  milestones Milestone[]
+}
+
+model Milestone {
+  id         Int       @id @default(autoincrement())
+  title      String
+  date       DateTime
+  note       String?
+  timelineId Int
+  timeline   Timeline  @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+}
+
+model Depoimento {
+  id        Int      @id @default(autoincrement())
+  texto String @db.LongText
+  createdAt DateTime @default(now())
+}
+
+
