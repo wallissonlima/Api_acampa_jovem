@@ -121,4 +121,15 @@ model Depoimento {
   createdAt DateTime @default(now())
 }
 
+model CarouselItem {
+  id        Int      @id @default(autoincrement())
+  altText   String?
+  image     Bytes     // ← novo campo para salvar o arquivo
+  mimeType  String?   // tipo da imagem, ex: image/jpeg
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 

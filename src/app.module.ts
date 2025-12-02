@@ -10,6 +10,7 @@ import { PrismaModule } from './database/database.module';
 import { ContentModule } from './content/content.module';
 import { TimelineModule } from './timeline/timeline.module';
 import { DepoimentosModule } from './depoimentos/depoimentos.module';
+import { CarouselModule } from './carousel/carousel.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { DepoimentosModule } from './depoimentos/depoimentos.module';
     ContentModule,
     TimelineModule,
     DepoimentosModule,
+    CarouselModule,
   ],
 })
 export class AppModule { }
