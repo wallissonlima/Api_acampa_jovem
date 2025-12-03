@@ -52,22 +52,25 @@ model ContentBlock {
 // FORMULÁRIOS
 // ==============================
 model Formulario {
-  id             Int           @id @default(autoincrement())
-  name           String
-  email          String
-  telefone       String?
-  dataNascimento DateTime?
-  cidade         String?
-  estado         String?
-  nomeCredencial String
-  tipoCredencial String?
-  mensagem       String?       @db.LongText
+  id                  Int       @id @default(autoincrement())
+  name                String
+  email               String
+  telefone            String?
+  dataNascimento      DateTime?
+  nomeResponsavel     String?
+  telefoneResponsavel  String?
+  nomeCredencial      String
+  tamanhoCamiseta     String?
+  autorizacaoImagem   String?
+  alergiaRestricao    String?
+  descricao           String?   @db.LongText
 
-  imagens        Media[]       @relation("FormularioImages")
+  imagens             Media[]   @relation("FormularioImages")
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
+
 
 // ==============================
 // EVENTOS
