@@ -11,6 +11,7 @@ import { ContentModule } from './content/content.module';
 import { TimelineModule } from './timeline/timeline.module';
 import { DepoimentosModule } from './depoimentos/depoimentos.module';
 import { CarouselModule } from './carousel/carousel.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CarouselModule } from './carousel/carousel.module';
     TimelineModule,
     DepoimentosModule,
     CarouselModule,
+    PaymentsModule,
   ],
 })
 export class AppModule { }
