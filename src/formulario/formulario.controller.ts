@@ -14,11 +14,10 @@ import { CreateFormularioDto } from './dto/create-formulario.dto';
 
 @Controller('formulario')
 export class FormularioController {
-  constructor(private readonly formularioService: FormularioService) { }
+  constructor(private readonly formularioService: FormularioService) {}
 
   @Post()
   create(@Body() data: CreateFormularioDto) {
-    // Não precisa toISOString, a conversão é feita no service
     return this.formularioService.create(data);
   }
 
@@ -43,5 +42,12 @@ export class FormularioController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.formularioService.delete(Number(id));
+  }
+
+  // NOVA ROTA PARA O FRONT VERIFICAR CPF
+  @Get('exists-cpf/:cpf')
+  async existsCpf(@Param('cpf') cpf: string) {
+    const exists = await this.formularioService.existsCpf(cpf);
+    return { exists };
   }
 }

@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { Prisma, Formulario } from '@prisma/client';
 import { CreateFormularioDto } from './dto/create-formulario.dto';
 
 @Injectable()
 export class FormularioService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   // Criar um novo formulário
   async create(data: CreateFormularioDto): Promise<Formulario> {
@@ -21,22 +21,38 @@ export class FormularioService {
       }
     }
 
-    return this.prisma.formulario.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        cpf: data.cpf,
-        dataNascimento: isoDate ?? data.dataNascimento, // se isoDate undefined, usa a string original
-        telefone: data.telefone,
-        nomeCredencial: data.nomeCredencial,
-        tamanhoCamiseta: data.tamanhoCamiseta,
-        nomeResponsavel: data.nomeResponsavel,
-        telefoneResponsavel: data.telefoneResponsavel,
-        autorizacaoImagem: data.autorizacaoImagem,
-        alergiaRestricao: data.alergiaRestricao,
-        descricao: data.descricao,
-      },
+    try {
+      return await this.prisma.formulario.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          cpf: data.cpf,
+          dataNascimento: isoDate ?? data.dataNascimento,
+          telefone: data.telefone,
+          nomeCredencial: data.nomeCredencial,
+          tamanhoCamiseta: data.tamanhoCamiseta,
+          nomeResponsavel: data.nomeResponsavel,
+          telefoneResponsavel: data.telefoneResponsavel,
+          autorizacaoImagem: data.autorizacaoImagem,
+          alergiaRestricao: data.alergiaRestricao,
+          descricao: data.descricao,
+        },
+      });
+    } catch (err) {
+      if (err.code === 'P2002') {
+        throw new BadRequestException('CPF já está cadastrado!');
+      }
+      throw err;
+    }
+  }
+
+  // Verificar se o CPF existe
+  async existsCpf(cpf: string): Promise<boolean> {
+    const exists = await this.prisma.formulario.findFirst({
+      where: { cpf },
     });
+
+    return !!exists;
   }
 
   async findAll(): Promise<Formulario[]> {
