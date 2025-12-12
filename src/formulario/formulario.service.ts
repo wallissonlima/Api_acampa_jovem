@@ -5,7 +5,7 @@ import { CreateFormularioDto } from './dto/create-formulario.dto';
 
 @Injectable()
 export class FormularioService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // Criar um novo formulário
   async create(data: CreateFormularioDto): Promise<Formulario> {
@@ -25,6 +25,7 @@ export class FormularioService {
       data: {
         name: data.name,
         email: data.email,
+        cpf: data.cpf,
         dataNascimento: isoDate ?? data.dataNascimento, // se isoDate undefined, usa a string original
         telefone: data.telefone,
         nomeCredencial: data.nomeCredencial,
@@ -53,8 +54,9 @@ export class FormularioService {
     });
   }
 
-  async removeAll(): Promise<{ count: number }> {
-    const deleted = await this.prisma.formulario.deleteMany({});
-    return { count: deleted.count };
+  async delete(id: number) {
+    return this.prisma.formulario.delete({
+      where: { id },
+    });
   }
 }

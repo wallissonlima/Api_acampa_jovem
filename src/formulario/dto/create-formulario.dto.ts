@@ -2,6 +2,7 @@
 export class CreateFormularioDto {
   name: string;
   email: string;
+  cpf: string;
   telefone?: string;
   dataNascimento?: string;
   nomeResponsavel?: string;

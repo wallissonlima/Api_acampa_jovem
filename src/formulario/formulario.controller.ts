@@ -14,7 +14,7 @@ import { CreateFormularioDto } from './dto/create-formulario.dto';
 
 @Controller('formulario')
 export class FormularioController {
-  constructor(private readonly formularioService: FormularioService) {}
+  constructor(private readonly formularioService: FormularioService) { }
 
   @Post()
   create(@Body() data: CreateFormularioDto) {
@@ -40,8 +40,8 @@ export class FormularioController {
     return this.formularioService.update(id, data);
   }
 
-  @Delete('all')
-  async removeAll(): Promise<{ count: number }> {
-    return this.formularioService.removeAll();
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.formularioService.delete(Number(id));
   }
 }
