@@ -72,6 +72,10 @@ model Formulario {
   updatedAt           DateTime  @updatedAt
 }
 
+model Configuracao {
+  id    Int     @id @default(1)
+  price Float
+}
 
 // ==============================
 // EVENTOS

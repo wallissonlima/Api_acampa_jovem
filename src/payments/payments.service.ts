@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { PrismaService } from '../database/prisma.service';
 
 @Injectable()
 export class PaymentsService {
   private readonly accessToken = process.env.MP_ACCESS_TOKEN;
 
-  async createPayment(data: any) {
-    const price = Number(data.price);
+  constructor(private prisma: PrismaService) { }
 
-    if (!price || isNaN(price) || price <= 0) {
-      throw new Error('Preço inválido');
+  async createPayment() {
+    // 👉 BUSCA O VALOR DEFINIDO PELO ADMIN
+    const config = await this.prisma.configuracao.findUnique({
+      where: { id: 1 },
+    });
+
+    if (!config || !config.price || config.price <= 0) {
+      throw new Error('Valor da inscrição não configurado');
     }
 
     const preference = {
@@ -18,11 +24,10 @@ export class PaymentsService {
           id: "acampa-2025",
           title: "Inscrição Acampa Jovem",
           quantity: 1,
-          unit_price: price,
+          unit_price: Number(config.price),
           currency_id: "BRL",
         },
       ],
-      // auto_return: "approved",
       back_urls: {
         success: "http://localhost:5173/sucesso",
         failure: "http://localhost:5173/erro",
@@ -49,6 +54,5 @@ export class PaymentsService {
       console.error("ERRO MERCADO PAGO:", err.response?.data || err);
       throw new Error("Erro ao criar pagamento");
     }
-
   }
 }
