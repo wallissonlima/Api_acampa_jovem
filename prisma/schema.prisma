@@ -72,6 +72,25 @@ model Formulario {
   updatedAt           DateTime  @updatedAt
 }
 
+// ==============================
+// FORMULÁRIOS servos
+// ==============================
+model FormularioServos {
+  id                  Int       @id @default(autoincrement())
+  name                String
+  email               String
+  cpf                 String    @unique 
+  telefone            String?
+  nomeCredencial      String
+  tamanhoCamiseta     String?
+  alergiaRestricao    String?
+  descricao           String?   @db.LongText
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+//config valor
 model Configuracao {
   id    Int     @id @default(1)
   price Float

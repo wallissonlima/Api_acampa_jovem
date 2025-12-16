@@ -12,6 +12,7 @@ import { TimelineModule } from './timeline/timeline.module';
 import { DepoimentosModule } from './depoimentos/depoimentos.module';
 import { CarouselModule } from './carousel/carousel.module';
 import { PaymentsModule } from './payments/payments.module';
+import { FormularioServosModule } from './formulario-servos/formulario-servos.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PaymentsModule } from './payments/payments.module';
     DepoimentosModule,
     CarouselModule,
     PaymentsModule,
+    FormularioServosModule,
   ],
 })
 export class AppModule { }

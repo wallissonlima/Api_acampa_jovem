@@ -14,7 +14,7 @@ import { CreateFormularioDto } from './dto/create-formulario.dto';
 
 @Controller('formulario')
 export class FormularioController {
-  constructor(private readonly formularioService: FormularioService) {}
+  constructor(private readonly formularioService: FormularioService) { }
 
   @Post()
   create(@Body() data: CreateFormularioDto) {

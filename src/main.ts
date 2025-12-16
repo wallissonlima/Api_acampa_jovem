@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,10 +12,19 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // 🔹 ValidationPipe GLOBAL (AQUI 👇)
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,     // remove campos que não estão no DTO
+      transform: true,     // transforma JSON em classe
+      forbidNonWhitelisted: false,
+    }),
+  );
+
   app.use(json({ limit: '25mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
 
-  app.setGlobalPrefix('api'); // 🔥 agora todos endpoints ficam /api/...
+  app.setGlobalPrefix('api'); // /api/...
 
   await app.listen(3000);
   console.log('🚀 API rodando em http://localhost:3000');
