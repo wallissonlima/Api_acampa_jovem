@@ -65,6 +65,7 @@ model Formulario {
   autorizacaoImagem   String?
   alergiaRestricao    String?
   descricao           String?   @db.LongText
+  statusPagamento StatusPagamento  @default(EM_PROCESSAMENTO)
 
   imagens             Media[]   @relation("FormularioImages")
 
@@ -85,16 +86,43 @@ model FormularioServos {
   tamanhoCamiseta     String?
   alergiaRestricao    String?
   descricao           String?   @db.LongText
+  statusPagamento StatusPagamento  @default(EM_PROCESSAMENTO)
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 }
 
-//config valor
-model Configuracao {
-  id    Int     @id @default(1)
-  price Float
+// ==============================
+//StatusPagamento
+// ==============================
+enum StatusPagamento {
+  EM_PROCESSAMENTO
+  APROVADO
+  NAO_APROVADO
 }
+
+// ==============================
+//Limite de vagas
+// ==============================
+model LimiteInscricao {
+  id                   Int      @id @default(1)
+  limiteParticipantes  Int?
+  limiteServos         Int?
+  ativo                Boolean  @default(true)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// ==============================
+//config valor
+// ==============================
+model ValorInscricao {
+  id                Int   @id @default(1)
+  priceParticipante Float
+  priceServo        Float
+}
+
 
 // ==============================
 // EVENTOS

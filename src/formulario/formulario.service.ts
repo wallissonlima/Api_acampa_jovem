@@ -2,14 +2,27 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { Prisma, Formulario } from '@prisma/client';
 import { CreateFormularioDto } from './dto/create-formulario.dto';
+import { LimiteInscricaoService } from 'src/limite-inscricao/limite-inscricao.service';
 
 @Injectable()
 export class FormularioService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private limiteInscricaoService: LimiteInscricaoService,) { }
 
   // Criar um novo formulário
   async create(data: CreateFormularioDto): Promise<Formulario> {
-    
+    // 🔒 VERIFICA LIMITE DE INSCRIÇÕES (AQUI 👈)
+    await this.limiteInscricaoService.validarParticipantes();
+
+    // ❌ Regra: telefone não pode ser igual ao do responsável
+    if (
+      data.telefone &&
+      data.telefoneResponsavel &&
+      data.telefone === data.telefoneResponsavel
+    ) {
+      throw new BadRequestException(
+        'O telefone do participante não pode ser igual ao telefone do responsável'
+      );
+    }
     // Converter dataNascimento caso venha no formato dd/MM/yyyy
     let isoDate: string | undefined = undefined;
     if (data.dataNascimento) {
@@ -28,7 +41,13 @@ export class FormularioService {
           name: data.name,
           email: data.email,
           cpf: data.cpf,
-          dataNascimento: isoDate ?? data.dataNascimento,
+
+          dataNascimento: isoDate
+            ? new Date(isoDate)
+            : data.dataNascimento
+              ? new Date(data.dataNascimento)
+              : undefined,
+
           telefone: data.telefone,
           nomeCredencial: data.nomeCredencial,
           tamanhoCamiseta: data.tamanhoCamiseta,
@@ -39,6 +58,7 @@ export class FormularioService {
           descricao: data.descricao,
         },
       });
+
     } catch (err) {
       if (err.code === 'P2002') {
         throw new BadRequestException('CPF já está cadastrado!');

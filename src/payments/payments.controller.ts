@@ -6,8 +6,10 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) { }
 
   @Post('pagamento')
-  createPayment() {
-    return this.paymentsService.createPayment();
+  createPayment(
+    @Body()
+    body: { tipo: 'PARTICIPANTE' | 'SERVO' },
+  ) {
+    return this.paymentsService.createPayment(body.tipo);
   }
-
 }

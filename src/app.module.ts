@@ -13,6 +13,8 @@ import { DepoimentosModule } from './depoimentos/depoimentos.module';
 import { CarouselModule } from './carousel/carousel.module';
 import { PaymentsModule } from './payments/payments.module';
 import { FormularioServosModule } from './formulario-servos/formulario-servos.module';
+import { LimiteInscricaoModule } from './limite-inscricao/limite-inscricao.module';
+import { ValorIncricaoModule } from './valor-incricao/valor-incricao.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { FormularioServosModule } from './formulario-servos/formulario-servos.mo
     CarouselModule,
     PaymentsModule,
     FormularioServosModule,
+    LimiteInscricaoModule,
+    ValorIncricaoModule,
   ],
 })
 export class AppModule { }

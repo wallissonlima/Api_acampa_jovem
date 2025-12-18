@@ -2,12 +2,15 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateFormularioServosDto } from './dto/create-formulario.dto';
 import { FormularioServos, Prisma } from '@prisma/client';
+import { LimiteInscricaoService } from 'src/limite-inscricao/limite-inscricao.service';
 
 @Injectable()
 export class FormularioServosService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private limiteInscricaoService: LimiteInscricaoService,) { }
 
   async create(data: CreateFormularioServosDto): Promise<FormularioServos> {
+    // 🔒 VERIFICA LIMITE DE INSCRIÇÕES (AQUI 👈)
+    await this.limiteInscricaoService.validarServos();
 
     try {
       return await this.prisma.formularioServos.create({
