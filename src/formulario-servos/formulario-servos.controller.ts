@@ -47,4 +47,10 @@ export class FormularioServosController {
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.formularioServosService.delete(id);
   }
+  // NOVA ROTA PARA O FRONT VERIFICAR CPF
+  @Get('exists-cpf/:cpf')
+  async existsCpf(@Param('cpf') cpf: string) {
+    const exists = await this.formularioServosService.existsCpf(cpf);
+    return { exists };
+  }
 }

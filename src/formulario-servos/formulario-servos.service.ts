@@ -35,6 +35,16 @@ export class FormularioServosService {
     }
   }
 
+  // Verificar se o CPF existe
+  async existsCpf(cpf: string): Promise<boolean> {
+    const exists = await this.prisma.formularioServos.findFirst({
+      where: { cpf },
+    });
+
+    return !!exists;
+  }
+
+
   async findAll(): Promise<FormularioServos[]> {
     return this.prisma.formularioServos.findMany();
   }
