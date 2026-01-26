@@ -172,7 +172,7 @@ model Milestone {
 
 model Depoimento {
   id        Int      @id @default(autoincrement())
-  texto String @db.LongText
+  texto     String   @db.LongText
   createdAt DateTime @default(now())
 }
 
