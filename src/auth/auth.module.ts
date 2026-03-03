@@ -6,6 +6,7 @@ import { JwtStrategy } from './strategies/jwt.strategy'; // <--- IMPORTANTE
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaService } from '../database/prisma.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -29,12 +30,14 @@ import { PrismaService } from '../database/prisma.service';
     AuthService,
     PrismaService,
     JwtStrategy,         // <--- ESSENCIAL, SENÃO O GUARD NÃO FUNCIONA
+    JwtAuthGuard,
   ],
   exports: [
     JwtModule,
     AuthService,
     PassportModule,
     JwtStrategy,         // <--- EXPORTA PARA USAR NO CONTENT MODULE
+    JwtAuthGuard,
   ],
 })
 export class AuthModule { }

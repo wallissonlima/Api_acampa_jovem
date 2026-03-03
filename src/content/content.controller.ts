@@ -15,12 +15,17 @@ import { UploadEventoDto } from './dto/update-content.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@ApiTags('Content eventos') // 👈 organiza no Swagger
+@ApiBearerAuth('access-token') // 👈 ativa cadeado 🔒
 @Controller('content')
 export class ContentController {
   constructor(private content: ContentService) { }
 
   // Public: get content by page (used by Home)
+  @Public()
   @Get()
   async getByPage(@Query('page') page: string) {
     if (!page) return { message: 'provide page query param, e.g. ?page=home' };

@@ -1,18 +1,23 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Put,
 } from '@nestjs/common';
 import { DepoimentosService } from './depoimentos.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@ApiTags('Depoimentos') // 👈 organiza no Swagger
+@ApiBearerAuth('access-token') // 👈 ativa cadeado 🔒
 @Controller('depoimentos')
 export class DepoimentosController {
     constructor(private service: DepoimentosService) { }
 
+    @Public()
     @Get()
     findAll() {
         return this.service.findAll();

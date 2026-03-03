@@ -12,12 +12,16 @@ import {
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CarouselService } from './carousel.service';
-import { Express } from 'express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@ApiTags('Carousel') // 👈 organiza no Swagger
+@ApiBearerAuth('access-token') // 👈 ativa cadeado 🔒
 @Controller('carousel')
 export class CarouselController {
     constructor(private readonly carouselService: CarouselService) { }
 
+    @Public()
     @Get()
     async findAll() {
         return await this.carouselService.findAll();

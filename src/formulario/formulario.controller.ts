@@ -11,11 +11,16 @@ import {
 import { FormularioService } from './formulario.service';
 import { Prisma, Formulario } from '@prisma/client';
 import { CreateFormularioDto } from './dto/create-formulario.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@ApiTags('Formulario') // 👈 organiza no Swagger
+@ApiBearerAuth('access-token') // 👈 ativa cadeado 🔒
 @Controller('formulario')
 export class FormularioController {
   constructor(private readonly formularioService: FormularioService) { }
 
+  @Public()
   @Post()
   create(@Body() data: CreateFormularioDto) {
     return this.formularioService.create(data);
@@ -45,6 +50,7 @@ export class FormularioController {
   }
 
   // NOVA ROTA PARA O FRONT VERIFICAR CPF
+  @Public()
   @Get('exists-cpf/:cpf')
   async existsCpf(@Param('cpf') cpf: string) {
     const exists = await this.formularioService.existsCpf(cpf);

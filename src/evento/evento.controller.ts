@@ -1,11 +1,16 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { EventosService } from './evento.service';
 import { UploadEventoDto } from '../content/dto/update-content.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@ApiTags('Eventos') // 👈 organiza no Swagger
+@ApiBearerAuth('access-token') // 👈 ativa cadeado 🔒
 @Controller('eventos')
 export class EventosController {
   constructor(private service: EventosService) {}
 
+  @Public()
   @Get()
   findAll() {
     return this.service.findAll();
