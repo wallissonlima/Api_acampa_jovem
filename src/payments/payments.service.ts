@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from '../database/prisma.service';
 
@@ -8,34 +12,57 @@ export class PaymentsService {
 
   constructor(private prisma: PrismaService) { }
 
-  async createPayment(tipo: 'PARTICIPANTE' | 'SERVO') {
-    // 🔹 Busca os valores configurados
+  async createPayment(inscricaoId: number) {
+    console.log('INSCRICAO ID RECEBIDO:', inscricaoId);
+
+    if (!inscricaoId) {
+      throw new BadRequestException('ID da inscrição não informado');
+    }
+
     const valores = await this.prisma.valorInscricao.findUnique({
       where: { id: 1 },
     });
 
+    console.log('VALORES:', valores);
+
     if (!valores) {
-      throw new BadRequestException(
-        'Valores de inscrição não configurados',
-      );
+      throw new BadRequestException('Valores de inscrição não configurados');
     }
 
-    // 🔹 Define o preço conforme o tipo
+    const inscricaoParticipante = await this.prisma.formulario.findUnique({
+      where: { id: inscricaoId },
+    });
+
+    console.log('INSCRICAO PARTICIPANTE:', inscricaoParticipante);
+
+    const inscricaoServo = await this.prisma.formularioServos.findUnique({
+      where: { id: inscricaoId },
+    });
+
+    console.log('INSCRICAO SERVO:', inscricaoServo);
+
+    if (!inscricaoParticipante && !inscricaoServo) {
+      throw new BadRequestException('Inscrição não encontrada');
+    }
+
+    const tipo: 'PARTICIPANTE' | 'SERVO' = inscricaoServo ? 'SERVO' : 'PARTICIPANTE';
+    const inscricao = inscricaoServo || inscricaoParticipante;
+
+    console.log('TIPO:', tipo);
+    console.log('INSCRICAO FINAL:', inscricao);
+
     const price =
       tipo === 'SERVO'
         ? valores.priceServo
         : valores.priceParticipante;
 
-    if (!price || price <= 0) {
-      throw new BadRequestException(
-        'Valor da inscrição inválido',
-      );
-    }
+    console.log('PRICE:', price);
+    console.log('ACCESS TOKEN EXISTS:', !!this.accessToken);
 
-    const preference = {
+    const preference: any = {
       items: [
         {
-          id: `inscricao-${tipo.toLowerCase()}`,
+          id: `inscricao-${tipo.toLowerCase()}-${inscricaoId}`,
           title:
             tipo === 'SERVO'
               ? 'Inscrição Servo'
@@ -45,14 +72,24 @@ export class PaymentsService {
           currency_id: 'BRL',
         },
       ],
-      back_urls: {
-        success: 'http://localhost:5173/sucesso',
-        failure: 'http://localhost:5173/erro',
-        pending: 'http://localhost:5173/pendente',
+      payer: {
+        name: inscricao?.name || undefined,
+        email: inscricao?.email || undefined,
       },
-      notification_url:
-        'http://localhost:3000/api/webhook/mercadopago',
+      external_reference: `${tipo}:${inscricaoId}`,
+      back_urls: {
+        success: 'https://acampajovem.com.br/sucesso',
+        failure: 'https://acampajovem.com.br/erro',
+        pending: 'https://acampajovem.com.br/pendente',
+      },
+      auto_return: 'approved',
     };
+
+    if (process.env.MP_WEBHOOK_URL) {
+      preference.notification_url = process.env.MP_WEBHOOK_URL;
+    }
+
+    console.log('PREFERENCE:', preference);
 
     try {
       const response = await axios.post(
@@ -66,13 +103,19 @@ export class PaymentsService {
         },
       );
 
-      return { preferenceId: response.data.id };
+      console.log('MERCADO PAGO RESPONSE:', response.data);
+
+      return {
+        preferenceId: response.data.id,
+        init_point: response.data.init_point,
+        sandbox_init_point: response.data.sandbox_init_point,
+        tipo,
+        inscricaoId,
+        valor: Number(price),
+      };
     } catch (err: any) {
-      console.error(
-        'ERRO MERCADO PAGO:',
-        err.response?.data || err,
-      );
-      throw new Error('Erro ao criar pagamento');
+      console.error('ERRO MERCADO PAGO:', err.response?.data || err);
+      throw new InternalServerErrorException('Erro ao criar pagamento');
     }
   }
 }

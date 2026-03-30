@@ -96,6 +96,7 @@ model FormularioServos {
 //StatusPagamento
 // ==============================
 enum StatusPagamento {
+  PENDENTE
   EM_PROCESSAMENTO
   APROVADO
   NAO_APROVADO

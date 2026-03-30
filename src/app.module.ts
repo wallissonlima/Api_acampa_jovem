@@ -15,6 +15,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { FormularioServosModule } from './formulario-servos/formulario-servos.module';
 import { LimiteInscricaoModule } from './limite-inscricao/limite-inscricao.module';
 import { ValorIncricaoModule } from './valor-incricao/valor-incricao.module';
+import { MercadoPagoWebhookModule } from './mercadopago-webhook/mercadopago-webhook.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ValorIncricaoModule } from './valor-incricao/valor-incricao.module';
     FormularioServosModule,
     LimiteInscricaoModule,
     ValorIncricaoModule,
+    MercadoPagoWebhookModule,
   ],
 })
 export class AppModule { }
