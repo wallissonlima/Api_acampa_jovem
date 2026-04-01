@@ -10,13 +10,22 @@ import { PrismaService } from '../database/prisma.service';
 export class PaymentsService {
   private readonly accessToken = process.env.MP_ACCESS_TOKEN;
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async createPayment(inscricaoId: number) {
+    console.log('=== CREATE PAYMENT START ===');
     console.log('INSCRICAO ID RECEBIDO:', inscricaoId);
+    console.log('ACCESS TOKEN EXISTS:', !!this.accessToken);
+    console.log('MP_WEBHOOK_URL:', process.env.MP_WEBHOOK_URL);
 
     if (!inscricaoId) {
       throw new BadRequestException('ID da inscrição não informado');
+    }
+
+    if (!this.accessToken) {
+      throw new InternalServerErrorException(
+        'MP_ACCESS_TOKEN não configurado no servidor',
+      );
     }
 
     const valores = await this.prisma.valorInscricao.findUnique({
@@ -45,19 +54,23 @@ export class PaymentsService {
       throw new BadRequestException('Inscrição não encontrada');
     }
 
-    const tipo: 'PARTICIPANTE' | 'SERVO' = inscricaoServo ? 'SERVO' : 'PARTICIPANTE';
+    const tipo: 'PARTICIPANTE' | 'SERVO' =
+      inscricaoServo ? 'SERVO' : 'PARTICIPANTE';
+
     const inscricao = inscricaoServo || inscricaoParticipante;
 
     console.log('TIPO:', tipo);
     console.log('INSCRICAO FINAL:', inscricao);
 
     const price =
-      tipo === 'SERVO'
-        ? valores.priceServo
-        : valores.priceParticipante;
+      tipo === 'SERVO' ? valores.priceServo : valores.priceParticipante;
 
-    console.log('PRICE:', price);
-    console.log('ACCESS TOKEN EXISTS:', !!this.accessToken);
+    console.log('PRICE ORIGINAL:', price);
+    console.log('PRICE NUMBER:', Number(price));
+
+    if (!price || Number(price) <= 0 || Number.isNaN(Number(price))) {
+      throw new BadRequestException('Preço inválido para gerar pagamento');
+    }
 
     const preference: any = {
       items: [
@@ -89,7 +102,10 @@ export class PaymentsService {
       preference.notification_url = process.env.MP_WEBHOOK_URL;
     }
 
-    console.log('PREFERENCE:', preference);
+    console.log(
+      'PREFERENCE:',
+      JSON.stringify(preference, null, 2),
+    );
 
     try {
       const response = await axios.post(
@@ -114,8 +130,19 @@ export class PaymentsService {
         valor: Number(price),
       };
     } catch (err: any) {
-      console.error('ERRO MERCADO PAGO:', err.response?.data || err);
-      throw new InternalServerErrorException('Erro ao criar pagamento');
+      console.error('=== ERRO MERCADO PAGO ===');
+      console.error('STATUS:', err.response?.status);
+      console.error('STATUS TEXT:', err.response?.statusText);
+      console.error('DATA:', err.response?.data);
+      console.error('MESSAGE:', err.message);
+      console.error('STACK:', err.stack);
+
+      throw new InternalServerErrorException(
+        err.response?.data?.message ||
+          err.response?.data?.cause ||
+          err.message ||
+          'Erro ao criar pagamento',
+      );
     }
   }
 }
