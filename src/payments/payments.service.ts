@@ -13,11 +13,7 @@ export class PaymentsService {
   constructor(private prisma: PrismaService) {}
 
   async createPayment(inscricaoId: number) {
-    console.log('=== CREATE PAYMENT START ===');
-    console.log('INSCRICAO ID RECEBIDO:', inscricaoId);
-    console.log('ACCESS TOKEN EXISTS:', !!this.accessToken);
-    console.log('MP_WEBHOOK_URL:', process.env.MP_WEBHOOK_URL);
-
+ 
     if (!inscricaoId) {
       throw new BadRequestException('ID da inscrição não informado');
     }
@@ -32,8 +28,6 @@ export class PaymentsService {
       where: { id: 1 },
     });
 
-    console.log('VALORES:', valores);
-
     if (!valores) {
       throw new BadRequestException('Valores de inscrição não configurados');
     }
@@ -42,13 +36,11 @@ export class PaymentsService {
       where: { id: inscricaoId },
     });
 
-    console.log('INSCRICAO PARTICIPANTE:', inscricaoParticipante);
-
     const inscricaoServo = await this.prisma.formularioServos.findUnique({
       where: { id: inscricaoId },
     });
 
-    console.log('INSCRICAO SERVO:', inscricaoServo);
+
 
     if (!inscricaoParticipante && !inscricaoServo) {
       throw new BadRequestException('Inscrição não encontrada');
@@ -59,14 +51,10 @@ export class PaymentsService {
 
     const inscricao = inscricaoServo || inscricaoParticipante;
 
-    console.log('TIPO:', tipo);
-    console.log('INSCRICAO FINAL:', inscricao);
+
 
     const price =
       tipo === 'SERVO' ? valores.priceServo : valores.priceParticipante;
-
-    console.log('PRICE ORIGINAL:', price);
-    console.log('PRICE NUMBER:', Number(price));
 
     if (!price || Number(price) <= 0 || Number.isNaN(Number(price))) {
       throw new BadRequestException('Preço inválido para gerar pagamento');
@@ -91,9 +79,9 @@ export class PaymentsService {
       },
       external_reference: `${tipo}:${inscricaoId}`,
       back_urls: {
-        success: 'https://acampajovem.com.br/sucesso',
-        failure: 'https://acampajovem.com.br/erro',
-        pending: 'https://acampajovem.com.br/pendente',
+        success: `https://acampajovem.com.br/sucesso?inscricaoId=${inscricaoId}&tipo=${tipo}`,
+        failure: `https://acampajovem.com.br/erro?inscricaoId=${inscricaoId}&tipo=${tipo}`,
+        pending: `https://acampajovem.com.br/pendente?inscricaoId=${inscricaoId}&tipo=${tipo}`,
       },
       auto_return: 'approved',
     };
@@ -101,11 +89,6 @@ export class PaymentsService {
     if (process.env.MP_WEBHOOK_URL) {
       preference.notification_url = process.env.MP_WEBHOOK_URL;
     }
-
-    console.log(
-      'PREFERENCE:',
-      JSON.stringify(preference, null, 2),
-    );
 
     try {
       const response = await axios.post(
@@ -119,7 +102,7 @@ export class PaymentsService {
         },
       );
 
-      console.log('MERCADO PAGO RESPONSE:', response.data);
+ 
 
       return {
         preferenceId: response.data.id,
